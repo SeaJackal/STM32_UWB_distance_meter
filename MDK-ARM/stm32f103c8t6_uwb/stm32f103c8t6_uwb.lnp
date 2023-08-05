@@ -34,6 +34,7 @@
 "stm32f103c8t6_uwb\deca_device.o"
 "stm32f103c8t6_uwb\deca_params_init.o"
 "stm32f103c8t6_uwb\eventrecorder.o"
+"stm32f103c8t6_uwb\retarget_io.o"
 --strict --scatter "stm32f103c8t6_uwb\stm32f103c8t6_uwb.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

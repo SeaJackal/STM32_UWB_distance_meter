@@ -600,6 +600,12 @@
           <targetInfo name="stm32f103c8t6_uwb"/>
         </targetInfos>
       </component>
+      <component Cbundle="ARM Compiler" Cclass="Compiler" Cgroup="I/O" Csub="STDOUT" Cvariant="EVR" Cvendor="Keil" Cversion="1.2.0" condition="ARMCC Cortex-M with EVR">
+        <package name="ARM_Compiler" schemaVersion="1.6.3" url="http://www.keil.com/pack/" vendor="Keil" version="1.6.3"/>
+        <targetInfos>
+          <targetInfo name="stm32f103c8t6_uwb"/>
+        </targetInfos>
+      </component>
     </components>
     <files>
       <file attr="config" category="header" name="Config\EventRecorderConf.h" version="0.0.0">

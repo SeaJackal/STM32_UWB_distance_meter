@@ -27,29 +27,24 @@ Project File Date:  08/05/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Program Files\Keil\Core\ARM\ARMCC\Bin'
 Build target 'stm32f103c8t6_uwb'
-compiling uart_port_plotter_interface.c...
-compiling tx_wait_resp_example.c...
-..\UWB_Lib\Inc\uwb_ui.h(24): warning:  #1295-D: Deprecated declaration UWB_ActivateRX - give arg types
-  UWB_status UWB_ActivateRX();
-..\UWB_Lib\Inc\uwb_ui.h(26): warning:  #1295-D: Deprecated declaration UWB_GetTxTimestamp64 - give arg types
-  uint64_t UWB_GetTxTimestamp64();
-..\UWB_Lib\Inc\uwb_ui.h(27): warning:  #1295-D: Deprecated declaration UWB_GetRxTimestamp64 - give arg types
-  uint64_t UWB_GetRxTimestamp64();
-..\UWB_Lib\Inc\uwb_ui.h(29): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\UWB_Lib\Inc\uwb_simple_distance_meter.h(40): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\examples\ex_03a_tx_wait_resp\tx_wait_resp_example.c(122): warning:  #177-D: variable "sys_time_1"  was declared but never referenced
-  	uint64_t sys_time_1 = 0;
-..\examples\ex_03a_tx_wait_resp\tx_wait_resp_example.c(123): warning:  #177-D: variable "sys_time_2"  was declared but never referenced
-  	uint64_t sys_time_2 = 0;
-..\examples\ex_03a_tx_wait_resp\tx_wait_resp_example.c(155): warning:  #177-D: variable "result_time"  was declared but never referenced
-  	uint64_t result_time[10];
-..\examples\ex_03a_tx_wait_resp\tx_wait_resp_example.c: 8 warnings, 0 errors
+compiling retarget_io.c...
+compiling EventRecorder.c...
+compiling main.c...
+../Src/main.c(63): warning:  #1295-D: Deprecated declaration start_simple_transmiting - give arg types
+  extern int start_simple_transmiting();
+../Src/main.c(64): warning:  #1295-D: Deprecated declaration start_simple_receiving - give arg types
+  extern int start_simple_receiving();
+../Src/main.c(65): warning:  #1295-D: Deprecated declaration start_repeater - give arg types
+  extern void start_repeater();
+../Src/main.c(66): warning:  #1295-D: Deprecated declaration start_distance_meter - give arg types
+  extern void start_distance_meter();
+../Src/main.c(67): warning:  #1295-D: Deprecated declaration start_agent - give arg types
+  extern void start_agent();
+../Src/main.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=15200 RO-data=516 RW-data=88 ZI-data=3344  
+Program Size: Code=15880 RO-data=528 RW-data=100 ZI-data=3332  
 FromELF: creating hex file...
-"stm32f103c8t6_uwb\stm32f103c8t6_uwb.axf" - 0 Error(s), 8 Warning(s).
+"stm32f103c8t6_uwb\stm32f103c8t6_uwb.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -64,6 +59,7 @@ Package Vendor: Keil
                 Keil.ARM_Compiler.1.6.3
                 Keil ARM Compiler extensions for ARM Compiler 5 and ARM Compiler 6
    * Component: Event Recorder Variant: DAP Version: 1.4.0
+   * Component: STDOUT Variant: EVR Version: 1.2.0
 
 Package Vendor: Keil
                 http://www.keil.com/pack/Keil.STM32F1xx_DFP.2.4.0.pack
@@ -86,6 +82,9 @@ Package Vendor: Keil
       Include file:  Config\EventRecorderConf.h
       Include file:  Include\EventRecorder.h
       Source file:   Source\EventRecorder.c
+
+   * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:EVR:1.2.0
+      Source file:   Source\retarget_io.c
 Build Time Elapsed:  00:00:03
 </pre>
 </body>
