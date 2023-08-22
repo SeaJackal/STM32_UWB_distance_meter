@@ -3,38 +3,46 @@
 
 #include <stdint.h>
 
-#include "uwb_ui.h"
-
-#define _UWB_DM_AGENT_OFFSET 3
-#define UWB_DM_AGENT_NUMBER (1<<(sizeof(uint8_t)*8-_UWB_DM_AGENT_OFFSET-1))
-#define UWB_DM_MESSAGE_NUMBER (1<<_UWB_DM_AGENT_OFFSET)
+typedef enum
+{
+	UWB_DM_SEARCHING_CONNECTION,
+	UWB_DM_WAITING_MESSAGE,
+	UWB_DM_READY_TO_SEND
+} UWB_DM_State;
 
 typedef enum
 {
 	UWB_DM_OK,
-	UWB_DM_ERROR
-} UWB_DM_status;
+	UWB_DM_DW_ERROR,
+	UWB_DM_CONNECTION_ERROR
+}UWB_DM_Status;
 
 typedef struct
 {
-	uint8_t id;
+	uint8_t self_index;
+	uint8_t agents_number;
+	uint8_t message_length;
 	
-	uint8_t is_waiting_responce;
+	uint8_t iteration;
+	uint8_t speaker;
+	UWB_DM_State state;
+	uint8_t error_counter;
 	
-	uint8_t message_id;
-	uint8_t master_id;
+	uint8_t* message_buffer;
+	uint16_t connection_bits;
 	
-	//uint64_t* tx_time;
-	uint64_t* delta_time;
-	uint64_t* corrected_time;
+	uint64_t* rx_times;
+	uint64_t tx_time;
 	
-	uint8_t* correction_id;
-	uint64_t* correction_time;
+	uint64_t* deltas;
+	uint64_t* corrections;
+	
+	uint64_t* self_times;
+	uint64_t* received_times;
 } UWB_DM_Agent;
 
-UWB_DM_status UWB_DM_initAgent(UWB_DM_Agent* new_agent, uint8_t id);
-UWB_DM_status UWB_DM_startMasterSession(UWB_DM_Agent* agent);
-UWB_DM_status UWB_DM_startSlaveSession(UWB_DM_Agent* agent);
-UWB_DM_status UWB_DM_waitForMessage(UWB_DM_Agent* agent);
+UWB_DM_Status UWB_DM_init(UWB_DM_Agent* new_agent, uint8_t agents_number, uint8_t index);
+UWB_DM_Status UWB_DM_reset(UWB_DM_Agent* agent);
+UWB_DM_Status UWB_DM_iterate(UWB_DM_Agent* agent);
 
 #endif

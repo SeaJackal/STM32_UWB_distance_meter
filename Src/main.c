@@ -64,7 +64,7 @@ extern int start_simple_transmiting();
 extern int start_simple_receiving();
 extern void start_repeater();
 extern void start_distance_meter();
-extern void start_agent();
+extern void start_dm_agent();
 extern uint8_t uart_flag;
 /* USER CODE END PFP */
 
@@ -113,10 +113,7 @@ int main(void)
 	//start_transmiting();
 	//start_simple_transmiting();
 	//start_simple_receiving();
-	//start_receiving();
-	//start_repeater();
-	//start_distance_meter();
-	start_agent();
+	start_dm_agent();
 
   /* USER CODE END 2 */
 

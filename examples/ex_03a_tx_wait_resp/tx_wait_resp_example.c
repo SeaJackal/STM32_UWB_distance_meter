@@ -24,13 +24,17 @@
 #include "usart.h"
 #include "uart_port_plotter_interface.h"
 #include "uwb_ui.h"
-#include "uwb_simple_distance_meter.h"
+//#include "uwb_simple_distance_meter.h"
+#include "uwb_distance_meter.h"
 #include "EventRecorder.h"
 #include "moving_average.h"
 
 /* Example application name and version to display on LCD screen. */
 #define APP_NAME "TX WAITRESP v1.2"
 #define UART_MESSAGE_LEN 30
+
+#define ERROR_TIMEOUT 1
+#define COUNT_DISTANCE(time) (time-b)*100/k
 
 /* Default communication configuration. We use here EVK1000's default mode (mode 3). */
 
@@ -43,74 +47,177 @@ uint8_t uart_command;
 uint64_t time_1;
 uint64_t time_2;
 
-uint64_t k = 1;
-uint64_t b = 0;
+uint64_t k = 200;
+uint64_t b = 32800;
 
 uint32_t distance = 0;
 
-void start_agent()
+//void start_agent()
+//{
+//	Port_plotter plotter = initPortPlotter(&huart1, 1);
+//	UWBS_Agent agent;
+//	Moving_Average filter = initFilter(100);
+//	HAL_UART_Receive_IT(&huart1, &uart_command, 1);
+//	while(UWBS_initAgent(&agent)!=UWBS_OK)
+//	{
+//		printf("Init error\n");
+//		HAL_Delay(UWBS_ERROR_TIMEOUT);
+//	}
+//	printf("Init OK\n");
+//	while(1)
+//	{
+//		//EventRecord2(0, 0, 1);
+//		while(UWBS_sendMessage(&agent)!=UWBS_OK)
+//		{
+//			printf("Transmition error\n");
+//			HAL_Delay(UWBS_ERROR_TIMEOUT);
+//			EventRecord2(0, 0, 6);
+//		}
+//		printf("Transmition OK\n");
+//		//EventRecord2(0, 0, 2);
+//		if(uart_flag)
+//		{
+//			if(uart_command == '1')
+//				time_1 = getFiltred(&filter);
+//			else if(uart_command == '2')
+//				time_2 = getFiltred(&filter);
+//			else if(uart_command == '3')
+//			{
+//				k = time_2 - time_1;
+//				b = time_1 - k;
+//			}
+//			uart_flag = 0;
+//			HAL_UART_Receive_IT(&huart1, &uart_command, 1);
+//		}
+//		switch(UWBS_getMessage(&agent))
+//		{
+//			case UWBS_DW_ERROR:
+//				EventRecord2(0, 0, 3);
+//				printf("Receiving error\n");
+//				HAL_Delay(UWBS_ERROR_TIMEOUT);
+//				break;
+//			case UWBS_RESPONDER_ERROR:
+//				EventRecord2(0, 0, 4);
+//				printf("Connection error\n");
+//				break;
+//			case UWBS_OK:
+//				EventRecord2(0, 0, 5);
+//				printf("Receiving OK\n");
+//				//printf("Own:%lli; Received:%lli\n", agent.self_time, agent.received_time);
+//				printf("Own:%lli; Received:%lli; Filtred:%lli\n", agent.self_time, agent.received_time, getFiltred(&filter));
+//				distance = (agent.received_time-b)*100/k;
+//				if(distance < 3000)
+//					addValue(&filter, distance);
+//				distance = (agent.self_time-b)*100/k;
+//				if(distance < 3000)
+//					addValue(&filter, distance);
+//				sendMessageForPlotter(&plotter, getFiltred(&filter));
+//				break;
+//			default:
+//				EventRecord2(0, 0, 7);
+//				break;
+//		}
+//		//HAL_Delay(5);
+//	}
+//}
+
+void start_dm_agent()
 {
 	Port_plotter plotter = initPortPlotter(&huart1, 4);
-	UWBS_Agent agent;
-	Moving_Average filter = initFilter(10);
-	HAL_UART_Receive_IT(&huart1, &uart_command, 1);
-	while(UWBS_initAgent(&agent)!=UWBS_OK)
+	//Moving_Average filter[4];
+	//for(uint8_t i = 0; i<4; i++)
+		//filter[i]=initFilter(2);
+	UWB_DM_Agent agent;
+	while(UWB_DM_init(&agent, 4, 0)!=UWB_DM_OK)
 	{
 		printf("Init error\n");
-		HAL_Delay(UWBS_ERROR_TIMEOUT);
+		HAL_Delay(ERROR_TIMEOUT);
 	}
-	printf("Init OK\n");
+	printf("Init successful\n");
 	while(1)
 	{
-		//EventRecord2(0, 0, 1);
-		while(UWBS_sendMessage(&agent)!=UWBS_OK)
+		uint8_t no_error_flag = 1;
+		printf("Connection searching\n");
+		UWB_DM_Status status = UWB_DM_iterate(&agent);
+		while(status==UWB_DM_DW_ERROR)
 		{
-			printf("Transmition error\n");
-			HAL_Delay(UWBS_ERROR_TIMEOUT);
-			EventRecord2(0, 0, 6);
-		}
-		printf("Transmition OK\n");
-		//EventRecord2(0, 0, 2);
-		if(uart_flag)
-		{
-			if(uart_command == '1')
-				time_1 = getFiltred(&filter);
-			else if(uart_command == '2')
-				time_2 = getFiltred(&filter);
-			else if(uart_command == '3')
+			printf("DW error\n");
+			HAL_Delay(ERROR_TIMEOUT);
+			while(UWB_DM_reset(&agent)==UWB_DM_DW_ERROR)
 			{
-				k = time_2 - time_1;
-				b = time_1 - k;
+				printf("Reset error\n");
+				HAL_Delay(ERROR_TIMEOUT);
 			}
-			uart_flag = 0;
-			HAL_UART_Receive_IT(&huart1, &uart_command, 1);
+			printf("Reset done\n");
+			status = UWB_DM_iterate(&agent);
 		}
-		switch(UWBS_getMessage(&agent))
+		if(status == UWB_DM_CONNECTION_ERROR)
+			printf("Connection failed\n");
+		while(no_error_flag)
 		{
-			case UWBS_DW_ERROR:
-				EventRecord2(0, 0, 3);
-				printf("Receiving error\n");
-				HAL_Delay(UWBS_ERROR_TIMEOUT);
-				break;
-			case UWBS_RESPONDER_ERROR:
-				EventRecord2(0, 0, 4);
-				printf("Connection error\n");
-				break;
-			case UWBS_OK:
-				EventRecord2(0, 0, 5);
-				printf("Receiving OK\n");
-				//printf("Own:%lli; Received:%lli\n", agent.self_time, agent.received_time);
-				addValue(&filter, agent.received_time);
-				addValue(&filter, agent.self_time);
-				printf("Own:%lli; Received:%lli; Filtred:%lli\n", agent.self_time, agent.received_time, getFiltred(&filter));
-				distance = (getFiltred(&filter)-b)*100/k;
-				sendMessageForPlotter(&plotter, getFiltred(&filter), distance, k, b);
-				break;
-			default:
-				EventRecord2(0, 0, 7);
-				break;
+			switch(agent.state)
+			{
+				case UWB_DM_WAITING_MESSAGE:
+					printf("Waiting message\n");
+					break;
+				case UWB_DM_READY_TO_SEND:
+					printf("Ready to send\n");
+					break;
+				default:
+					printf("Code error\n");
+					break;
+			}
+			switch(UWB_DM_iterate(&agent))
+			{
+				case UWB_DM_DW_ERROR:
+					printf("DW error\n");
+					HAL_Delay(ERROR_TIMEOUT);
+					while(UWB_DM_reset(&agent)==UWB_DM_DW_ERROR)
+					{
+						printf("Reset error\n");
+						HAL_Delay(ERROR_TIMEOUT);
+					}
+					printf("Reset done\n");
+					no_error_flag = 0;
+					break;
+				case UWB_DM_CONNECTION_ERROR:
+					printf("Connection error\n");
+					while(UWB_DM_reset(&agent)==UWB_DM_DW_ERROR)
+					{
+						printf("Reset error\n");
+						HAL_Delay(ERROR_TIMEOUT);
+					}
+					HAL_Delay(ERROR_TIMEOUT);
+					no_error_flag = 0;
+					break;
+				case UWB_DM_OK:
+					printf("Iteration OK\n");
+					for(uint8_t i = 0; i<4; i++)
+					{
+						if(i == agent.self_index)
+							continue;
+						printf("Agent %i:%i %llu %llu\n",
+							i, agent.connection_bits&1<<i, agent.self_times[i], agent.received_times[i]);
+					}
+					sendMessageForPlotter(&plotter, 
+						(COUNT_DISTANCE(agent.self_times[0])<3000)?COUNT_DISTANCE(agent.self_times[0]):0,
+						(COUNT_DISTANCE(agent.self_times[1])<3000)?COUNT_DISTANCE(agent.self_times[1]):0,
+						(COUNT_DISTANCE(agent.self_times[2])<3000)?COUNT_DISTANCE(agent.self_times[2]):0,
+						(COUNT_DISTANCE(agent.self_times[3])<3000)?COUNT_DISTANCE(agent.self_times[3]):0);
+//					for(uint8_t i = 0; i<4; i++)
+//					{
+//						uint32_t distance = COUNT_DISTANCE(agent.self_times[i]);
+//						if(distance < 3000)
+//							addValue(filter+i, distance);
+//					}
+//					sendMessageForPlotter(&plotter, 
+//						getFiltred(filter),
+//						getFiltred(filter+1),
+//						getFiltred(filter+2),
+//						getFiltred(filter+3));
+					break;
+			}
 		}
-		//HAL_Delay(5);
 	}
 }
 
@@ -193,37 +300,35 @@ void start_distance_meter()
 
 int start_simple_transmiting()
 {
-	UWB_Init(0);
-	uint32_t tx_message = 0x00000000;
+	UWB_Init(60000);
+	uint8_t tx_message[62];
 	while(1)
 	{
-		for(uint8_t i = 0; i<4; i++)
-			(*((uint8_t*)&tx_message+i))++;
-		for(uint8_t i = 0; i<4; i++)
-			printf("%i ", *((uint8_t*)&tx_message+i));
-		printf("\n");
-		UWB_SendMessage(&tx_message, sizeof(uint8_t), 0);
-		for(uint8_t i = 0; i<4; i++)
-			printf("%i ", *(uint8_t*)(&tx_message+i));
-		printf("\n");
+		for(uint8_t i = 0; i<62; i++)
+			tx_message[i] = i;
+		UWB_SendMessage(&tx_message, 62, 0);
 		//HAL_Delay(500);
 	}
 }
 
 int start_simple_receiving()
 {
-	UWB_Init(0);
-	uint32_t rx_message;
+	UWB_Init(60000);
+	uint8_t rx_message[62];
 	while(1)
 	{
 		UWB_ActivateRX();
-		switch(UWB_WaitForMessage(&rx_message, sizeof(uint8_t)))
+		switch(UWB_WaitForMessage(rx_message, 62))
 		{
 			case UWB_OK:
-				printf("%i\n", *(uint8_t*)(&rx_message));
+				for(uint8_t i = 0; i<62; i++)
+					if(rx_message[i]!=i)
+						printf("%i %i\n", rx_message[i], i);
+				printf("Ok\n");
 				break;
 			case UWB_ERROR:
 				printf("Error\n");
+				HAL_Delay(1000);
 				break;
 			case UWB_TIMEOUT:
 				printf("Timeout\n");

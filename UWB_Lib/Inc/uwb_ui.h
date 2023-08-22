@@ -9,7 +9,8 @@ typedef enum
 {
 	UWB_OK,
 	UWB_ERROR,
-	UWB_TIMEOUT
+	UWB_TIMEOUT,
+	UWB_READY
 } UWB_status;
 
 typedef struct
@@ -25,5 +26,7 @@ UWB_status UWB_ActivateRX();
 UWB_status UWB_WaitForMessage(void* message, uint32_t length);
 uint64_t UWB_GetTxTimestamp64();
 uint64_t UWB_GetRxTimestamp64();
+UWB_status UWB_checkMessage();
+uint32_t UWB_readMessage(uint8_t* message);
 
 #endif

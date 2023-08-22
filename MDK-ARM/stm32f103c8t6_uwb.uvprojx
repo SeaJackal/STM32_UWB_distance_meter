@@ -429,11 +429,6 @@
               <FilePath>..\Libs\moving_average.c</FilePath>
             </File>
             <File>
-              <FileName>uwb_simple_distance_meter.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\UWB_Lib\Src\uwb_simple_distance_meter.c</FilePath>
-            </File>
-            <File>
               <FileName>uwb_ui.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\UWB_Lib\Src\uwb_ui.c</FilePath>
@@ -447,6 +442,16 @@
               <FileName>uart_port_plotter_interface.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Libs\uart_port_plotter_interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>uwb_distance_meter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UWB_Lib\Src\uwb_distance_meter.c</FilePath>
+            </File>
+            <File>
+              <FileName>uwb_distance_meter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\UWB_Lib\Inc\uwb_distance_meter.h</FilePath>
             </File>
           </Files>
         </Group>

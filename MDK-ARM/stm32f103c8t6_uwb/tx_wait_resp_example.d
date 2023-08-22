@@ -37,6 +37,6 @@ stm32f103c8t6_uwb\tx_wait_resp_example.o: ../Inc/usart.h
 stm32f103c8t6_uwb\tx_wait_resp_example.o: ../Inc/main.h
 stm32f103c8t6_uwb\tx_wait_resp_example.o: ..\Libs\uart_port_plotter_interface.h
 stm32f103c8t6_uwb\tx_wait_resp_example.o: ..\UWB_Lib\Inc\uwb_ui.h
-stm32f103c8t6_uwb\tx_wait_resp_example.o: ..\UWB_Lib\Inc\uwb_simple_distance_meter.h
+stm32f103c8t6_uwb\tx_wait_resp_example.o: ..\UWB_Lib\Inc\uwb_distance_meter.h
 stm32f103c8t6_uwb\tx_wait_resp_example.o: C:\Program Files\Keil\Packs\Keil\ARM_Compiler\1.6.3\Include\EventRecorder.h
 stm32f103c8t6_uwb\tx_wait_resp_example.o: ..\Libs\moving_average.h

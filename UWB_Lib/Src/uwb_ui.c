@@ -5,6 +5,8 @@
 #include "sleep.h"
 #include "dw1000.h"
 
+#include "EventRecorder.h"
+
 #include <stdio.h>
 
 UWB_status UWB_Init(uint32_t rx_timeout)
@@ -27,6 +29,7 @@ UWB_status UWB_Init(uint32_t rx_timeout)
     spi_set_rate_low();
     if (dwt_initialise(DWT_LOADUCODE) == DWT_ERROR)
     {
+			EventRecord2(1, 0, 0);
         return UWB_ERROR;
     }
     dwt_configure(&config);
@@ -37,6 +40,7 @@ UWB_status UWB_Init(uint32_t rx_timeout)
 
 UWB_status UWB_SendMessage(const void* message, uint16_t length, uint8_t wait_responce_flag)
 {
+		//dwt_forcetrxoff();
 		dwt_writetxdata(length+2, (uint8_t*)message, 0);
 		dwt_writetxfctrl(length+2, 0, 0);
 		uint8_t mode;
@@ -47,7 +51,10 @@ UWB_status UWB_SendMessage(const void* message, uint16_t length, uint8_t wait_re
 		if(dwt_starttx(mode)==DWT_SUCCESS)
 			return UWB_OK;
 		else
+		{
+			EventRecord2(2, 0, 0);
 			return UWB_ERROR;
+		}
 }
 
 UWB_status UWB_ActivateRX()
@@ -64,7 +71,10 @@ UWB_status UWB_WaitForMessage(void* message, uint32_t length)
 		while (!((status_reg_ = dwt_read32bitreg(SYS_STATUS_ID)) & SYS_STATUS_RXFCG))
 		{
 				if(status_reg_ & SYS_STATUS_ALL_RX_ERR)
+				{
+					EventRecord2(3, status_reg_ & SYS_STATUS_ALL_RX_ERR, 0);
 					return UWB_ERROR;
+				}
 				if(status_reg_ & SYS_STATUS_RXRFTO)
 				{
 					dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXRFTO);
@@ -72,7 +82,10 @@ UWB_status UWB_WaitForMessage(void* message, uint32_t length)
 				}
 		}
 		if(!(status_reg_ & SYS_STATUS_RXDFR))
+		{
+			EventRecord2(4, 0, 0);
 				return UWB_ERROR;
+		}
 		dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG);
 		//uint32_t frame_len = dwt_read32bitreg(RX_FINFO_ID) & RX_FINFO_RXFL_MASK_1023;
 		dwt_readrxdata(message, length, 0);
@@ -86,7 +99,10 @@ uint64_t UWB_GetTxTimestamp64()
 	while(!((status_reg_ = dwt_read32bitreg(SYS_STATUS_ID)) & SYS_STATUS_TXFRS))
 	{
 		if(status_reg_ & SYS_STATUS_ALL_RX_ERR)
+		{
+			EventRecord2(5, 0, 0);
 				return UWB_ERR_TIME;
+		}
 	}
 	uint64_t tx_time = 0;
 	dwt_readtxtimestamp((uint8_t*)&tx_time);
@@ -98,9 +114,40 @@ uint64_t UWB_GetRxTimestamp64()
 	while(!((status_reg_ = dwt_read32bitreg(SYS_STATUS_ID)) & SYS_STATUS_LDEDONE))
 	{
 		if(status_reg_ & SYS_STATUS_ALL_RX_ERR)
+		{
+			EventRecord2(6, 0, 0);
 				return UWB_ERR_TIME;
+		}
 	}
 	uint64_t rx_time = 0;
 	dwt_readrxtimestamp((uint8_t*)&rx_time);
 	return rx_time;
+}
+
+UWB_status UWB_checkMessage()
+{
+	uint32_t status_reg_ = dwt_read32bitreg(SYS_STATUS_ID);
+	if(status_reg_ & SYS_STATUS_RXFCG)
+	{
+		if(!(status_reg_ & SYS_STATUS_RXDFR))
+				return UWB_ERROR;
+		return UWB_READY;
+	}
+	if(status_reg_ & SYS_STATUS_ALL_RX_ERR)
+		return UWB_ERROR;
+	if(status_reg_ & SYS_STATUS_RXRFTO)
+	{
+		dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXRFTO);
+		return UWB_TIMEOUT;
+	}
+	return UWB_OK;
+}
+
+uint32_t UWB_readMessage(uint8_t* message)
+{
+		dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG);
+		uint32_t frame_len = dwt_read32bitreg(RX_FINFO_ID) & RX_FINFO_RXFL_MASK_1023;
+		dwt_readrxdata(message, frame_len, 0);
+		dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG);
+		return frame_len;
 }
