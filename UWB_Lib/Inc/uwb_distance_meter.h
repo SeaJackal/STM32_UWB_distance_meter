@@ -37,12 +37,17 @@ typedef struct
 	uint64_t* deltas;
 	uint64_t* corrections;
 	
-	uint64_t* self_times;
-	uint64_t* received_times;
+	uint32_t* self_times;
+	uint32_t** received_times;
 } UWB_DM_Agent;
 
 UWB_DM_Status UWB_DM_init(UWB_DM_Agent* new_agent, uint8_t agents_number, uint8_t index);
 UWB_DM_Status UWB_DM_reset(UWB_DM_Agent* agent);
 UWB_DM_Status UWB_DM_iterate(UWB_DM_Agent* agent);
+
+uint8_t UWB_DM_countAllTimesNumber(UWB_DM_Agent* agent);
+uint8_t UWB_DM_countUniqueTimesNumber(UWB_DM_Agent* agent);
+void UWB_DM_getAllTimes(UWB_DM_Agent* agent, uint32_t* dest);
+void UWB_DM_getUniqueTimes(UWB_DM_Agent* agent, uint32_t* dest);
 
 #endif

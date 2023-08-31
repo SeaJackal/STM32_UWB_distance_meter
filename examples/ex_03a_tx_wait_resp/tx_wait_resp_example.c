@@ -48,7 +48,7 @@ uint64_t time_1;
 uint64_t time_2;
 
 uint64_t k = 200;
-uint64_t b = 32800;
+uint64_t b = 32900;
 
 uint32_t distance = 0;
 
@@ -123,7 +123,7 @@ uint32_t distance = 0;
 
 void start_dm_agent()
 {
-	Port_plotter plotter = initPortPlotter(&huart1, 4);
+	Port_plotter plotter = initPortPlotter(&huart1, 6);
 	//Moving_Average filter[4];
 	//for(uint8_t i = 0; i<4; i++)
 		//filter[i]=initFilter(2);
@@ -196,14 +196,16 @@ void start_dm_agent()
 					{
 						if(i == agent.self_index)
 							continue;
-						printf("Agent %i:%i %llu %llu\n",
-							i, agent.connection_bits&1<<i, agent.self_times[i], agent.received_times[i]);
+						printf("Agent %i:%i %llu\n",
+							i, agent.connection_bits&1<<i, agent.self_times[i]);
 					}
 					sendMessageForPlotter(&plotter, 
-						(COUNT_DISTANCE(agent.self_times[0])<3000)?COUNT_DISTANCE(agent.self_times[0]):0,
 						(COUNT_DISTANCE(agent.self_times[1])<3000)?COUNT_DISTANCE(agent.self_times[1]):0,
 						(COUNT_DISTANCE(agent.self_times[2])<3000)?COUNT_DISTANCE(agent.self_times[2]):0,
-						(COUNT_DISTANCE(agent.self_times[3])<3000)?COUNT_DISTANCE(agent.self_times[3]):0);
+						(COUNT_DISTANCE(agent.self_times[3])<3000)?COUNT_DISTANCE(agent.self_times[3]):0,
+						(COUNT_DISTANCE(agent.received_times[1][2])<3000)?COUNT_DISTANCE(agent.received_times[1][2]):0,
+						(COUNT_DISTANCE(agent.received_times[1][3])<3000)?COUNT_DISTANCE(agent.received_times[1][3]):0,
+						(COUNT_DISTANCE(agent.received_times[2][3])<3000)?COUNT_DISTANCE(agent.received_times[2][3]):0);
 //					for(uint8_t i = 0; i<4; i++)
 //					{
 //						uint32_t distance = COUNT_DISTANCE(agent.self_times[i]);

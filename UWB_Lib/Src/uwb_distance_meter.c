@@ -28,17 +28,19 @@ UWB_DM_Status UWB_DM_init(UWB_DM_Agent* new_agent, uint8_t agents_number, uint8_
 	uint64_t* rx_times = malloc(sizeof(uint64_t) * agents_number);
 	uint64_t* deltas = malloc(sizeof(uint64_t)*agents_number);
 	uint64_t* corrections = malloc(sizeof(uint64_t)*agents_number);
-	uint64_t* self_times = malloc(sizeof(uint64_t)*agents_number);
-	uint64_t* received_times = malloc(sizeof(uint64_t)*agents_number);
-	uint8_t* message_buffer = malloc(sizeof(uint8_t)*message_length);
+	uint32_t* self_times = malloc(sizeof(uint32_t)*agents_number);
+	uint32_t** received_times = malloc(sizeof(uint32_t*)*agents_number);
 	for(uint8_t i = 0; i<agents_number; i++)
 	{
 		rx_times[i] = 0ll;
 		deltas[i] = 0ll;
 		corrections[i] = 0ll;
 		self_times[i] = 0ll;
-		received_times[i] = 0ll;
+		received_times[i] = malloc(sizeof(uint32_t)*agents_number);
+		for(uint8_t j = 0; j<agents_number; j++)
+			received_times[i][j] = 0ll;
 	}
+	uint8_t* message_buffer = malloc(sizeof(uint8_t)*message_length);
 	for(uint8_t i = 0; i<message_length; i++)
 		message_buffer[i] = 0;
 	UWB_DM_Agent temp = {
@@ -84,7 +86,7 @@ UWB_DM_Status UWB_DM_iterate(UWB_DM_Agent* agent)
 						if(timeouts_counter>agent->agents_number)
 						{
 							agent->state = UWB_DM_READY_TO_SEND;
-							return UWB_DM_CONNECTION_ERROR;
+							return UWB_DM_OK;
 						}
 						if(UWB_ActivateRX()!=UWB_OK)
 							return UWB_DM_DW_ERROR;
@@ -138,7 +140,8 @@ UWB_DM_Status UWB_DM_reset(UWB_DM_Agent* agent)
 		agent->deltas[i] = 0ll;
 		agent->corrections[i] = 0ll;
 		agent->self_times[i] = 0ll;
-		agent->received_times[i] = 0ll;
+		for(uint8_t j = 0; j<agent->agents_number; j++)
+			agent->received_times[i][j] = 0ll;
 	}
 	if(UWB_ActivateRX()!=UWB_OK)
 		return UWB_DM_DW_ERROR;
@@ -161,7 +164,6 @@ UWB_DM_Status UWB_DM_parseMessage(UWB_DM_Agent* agent)
 	}
 	if(agent->message_buffer[0]!=agent->iteration || agent->message_buffer[1]!=agent->speaker)
 	{
-		EventRecord4(1, agent->message_buffer[0], agent->iteration, agent->message_buffer[1], agent->speaker);
 		if(agent->state != UWB_DM_SEARCHING_CONNECTION)
 		{
 			agent->error_counter++;
@@ -178,8 +180,8 @@ UWB_DM_Status UWB_DM_parseMessage(UWB_DM_Agent* agent)
 	agent->rx_times[sender] = rx_time;
 	uint64_t delta = read40to64bit(agent->message_buffer+2+agent->self_index*5);
 	uint64_t correction = read40to64bit(agent->message_buffer+2+agent->agents_number*5+agent->self_index*5);
-	agent->received_times[sender] = read40to64bit(agent->message_buffer+2+agent->agents_number*10+agent->self_index*5);
-	EventRecord4(0, agent->deltas[sender], delta, agent->corrections[sender], correction);
+	for(uint8_t i = 0; i<agent->agents_number; i++)
+		agent->received_times[sender][i] = read40to64bit(agent->message_buffer+2+agent->agents_number*10+i*5);
 	agent->self_times[sender] = UWB_DM_COUNT_TIME(
 		agent->deltas[sender], delta, agent->corrections[sender], correction);
 	agent->deltas[sender] = UWB_DM_COUNT_DIFFERENCE(agent->rx_times[sender], agent->tx_time);
@@ -203,6 +205,47 @@ UWB_DM_Status UWB_DM_fillMessage(UWB_DM_Agent* agent)
 	if(agent->tx_time==UWB_ERR_TIME)
 		return UWB_DM_DW_ERROR;
 	return UWB_DM_OK;
+}
+
+uint8_t UWB_DM_countAllTimesNumber(UWB_DM_Agent* agent)
+{
+	return agent->agents_number*(agent->agents_number-1);
+}
+uint8_t UWB_DM_countUniqueTimesNumber(UWB_DM_Agent* agent)
+{
+	return agent->agents_number*(agent->agents_number-1)/2;
+}
+void UWB_DM_getAllTimes(UWB_DM_Agent* agent, uint32_t* dest)
+{
+	uint8_t j;
+	uint8_t index = 0;
+	for(uint8_t i = 0; i<agent->agents_number; i++)
+	{
+		for(j = 0; j<agent->agents_number; j++)
+		{
+			if(i != j)
+			{
+				if(agent->self_index==i)
+					dest[index] = agent->self_times[j];
+				else
+					dest[index] = agent->received_times[i][j];
+				index++;
+			}
+		}
+	}
+}
+void UWB_DM_getUniqueTimes(UWB_DM_Agent* agent, uint32_t* dest)
+{
+	for(uint8_t i = 0; i<agent->agents_number; i++)
+	{
+		for(uint8_t j = i+1; j<agent->agents_number; j++)
+		{
+			if(agent->self_index==i)
+				dest[i*(agent->agents_number-1)+j] = agent->self_times[j];
+			else
+				dest[i*(agent->agents_number-1)+j] = agent->received_times[i][j];
+		}
+	}
 }
 
 void write64to40bit(uint8_t* dest, uint64_t src)

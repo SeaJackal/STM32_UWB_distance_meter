@@ -31,6 +31,8 @@
 #include "dw1000.h"
 #include "deca_device_api.h"
 #include "deca_regs.h"
+
+#include "uwb_boat_interface.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,8 +72,7 @@ extern uint8_t uart_flag;
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t uart_tx_buffer[20];
-uint8_t str_len;
+uint8_t boat_uart_rx_flag = 0;
 /* USER CODE END 0 */
 
 /**
@@ -106,21 +107,37 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-	sprintf((char*)uart_tx_buffer, "HAL is OK");
-	str_len = strlen((char*)uart_tx_buffer);
-	uart_tx_buffer[str_len] = 13;
-	HAL_UART_Transmit_IT(&huart1, uart_tx_buffer, str_len);
-	//start_transmiting();
-	//start_simple_transmiting();
-	//start_simple_receiving();
-	start_dm_agent();
-
+	UWB_INTERFACE_init();
+	HAL_UART_Receive_IT(&huart1, UWB_INTERFACE_getInitBuffer(), UWB_INTERFACE_getInitLength());
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		if(boat_uart_rx_flag)
+		{
+			boat_uart_rx_flag = 0;
+			UWB_INTERFACE_markGetMessage();
+			HAL_UART_Receive_IT(&huart1, UWB_INTERFACE_getInitBuffer(), UWB_INTERFACE_getInitLength());
+		}
+		switch(UWB_INTERFACE_iterate())
+		{
+			case UWB_INTERFACE_NO_MESSAGE:
+				//printf("No message\n");
+				break;
+			case UWB_INTERFACE_INCORRECT_MESSAGE:
+				printf("Wrong crc\n");
+				break;
+			case UWB_INTERFACE_READY_TO_SEND_ERROR:
+				printf("UWB error\n");
+				HAL_UART_Transmit(&huart1, UWB_INTERFACE_getMessageBuffer(), UWB_INTERFACE_getMessageLength(), 100);
+				break;			
+			case UWB_INTERFACE_READY_TO_SEND_OK:
+				printf("UWB ok\n");
+				HAL_UART_Transmit(&huart1, UWB_INTERFACE_getMessageBuffer(), UWB_INTERFACE_getMessageLength(), 100);
+				break;
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -173,7 +190,7 @@ void SystemClock_Config(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
           if(huart == &huart1)
-						uart_flag = 1;
+						boat_uart_rx_flag = 1;
 }
 
 /* USER CODE END 4 */

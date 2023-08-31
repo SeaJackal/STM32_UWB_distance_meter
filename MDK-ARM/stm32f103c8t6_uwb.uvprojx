@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>STM32F103C8</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.4.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000-0x20004FFF) IROM(0x8000000-0x800FFFF) CLOCK(8000000) CPUTYPE("Cortex-M3") TZ</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;..\Hardware\DW1000;..\Hardware\DW1000\decadriver;..\Hardware\DW1000\platform;..\UWB_Lib\Inc;..\Libs</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../Hardware/DW1000;../Hardware/DW1000/decadriver;../Hardware/DW1000/platform;../UWB_Lib/Inc;../Libs</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -394,6 +394,96 @@
           <GroupName>Application/User</GroupName>
           <Files>
             <File>
+              <FileName>uwb_boat_interface.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\UWB_Lib\Inc\uwb_boat_interface.h</FilePath>
+            </File>
+            <File>
+              <FileName>uwb_simple_distance_meter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\UWB_Lib\Inc\uwb_simple_distance_meter.h</FilePath>
+            </File>
+            <File>
+              <FileName>uwb_ui.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\UWB_Lib\Inc\uwb_ui.h</FilePath>
+            </File>
+            <File>
+              <FileName>uwb_ui.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UWB_Lib\Src\uwb_ui.c</FilePath>
+            </File>
+            <File>
+              <FileName>free_index_controller.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libs\free_index_controller.c</FilePath>
+            </File>
+            <File>
+              <FileName>moving_average.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libs\moving_average.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart_port_plotter_interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libs\uart_port_plotter_interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>dw1000.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\DW1000\dw1000.c</FilePath>
+            </File>
+            <File>
+              <FileName>deca_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\DW1000\decadriver\deca_device.c</FilePath>
+            </File>
+            <File>
+              <FileName>deca_params_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\DW1000\decadriver\deca_params_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>deca_mutex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\DW1000\platform\deca_mutex.c</FilePath>
+            </File>
+            <File>
+              <FileName>deca_sleep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\DW1000\platform\deca_sleep.c</FilePath>
+            </File>
+            <File>
+              <FileName>deca_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\DW1000\platform\deca_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>tx_wait_resp_example.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\examples\ex_03a_tx_wait_resp\tx_wait_resp_example.c</FilePath>
+            </File>
+            <File>
+              <FileName>uwb_distance_meter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UWB_Lib\Src\uwb_distance_meter.c</FilePath>
+            </File>
+            <File>
+              <FileName>crc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Libs\crc.h</FilePath>
+            </File>
+            <File>
+              <FileName>crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libs\crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>uwb_boat_interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UWB_Lib\Src\uwb_boat_interface.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Src/main.c</FilePath>
@@ -422,36 +512,6 @@
               <FileName>stm32f1xx_hal_msp.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Src/stm32f1xx_hal_msp.c</FilePath>
-            </File>
-            <File>
-              <FileName>moving_average.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Libs\moving_average.c</FilePath>
-            </File>
-            <File>
-              <FileName>uwb_ui.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\UWB_Lib\Src\uwb_ui.c</FilePath>
-            </File>
-            <File>
-              <FileName>tx_wait_resp_example.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\examples\ex_03a_tx_wait_resp\tx_wait_resp_example.c</FilePath>
-            </File>
-            <File>
-              <FileName>uart_port_plotter_interface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Libs\uart_port_plotter_interface.c</FilePath>
-            </File>
-            <File>
-              <FileName>uwb_distance_meter.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\UWB_Lib\Src\uwb_distance_meter.c</FilePath>
-            </File>
-            <File>
-              <FileName>uwb_distance_meter.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\UWB_Lib\Inc\uwb_distance_meter.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -542,41 +602,6 @@
               <FileName>system_stm32f1xx.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Src/system_stm32f1xx.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>DW1000</GroupName>
-          <Files>
-            <File>
-              <FileName>deca_mutex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardware\DW1000\platform\deca_mutex.c</FilePath>
-            </File>
-            <File>
-              <FileName>deca_sleep.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardware\DW1000\platform\deca_sleep.c</FilePath>
-            </File>
-            <File>
-              <FileName>deca_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardware\DW1000\platform\deca_spi.c</FilePath>
-            </File>
-            <File>
-              <FileName>dw1000.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardware\DW1000\dw1000.c</FilePath>
-            </File>
-            <File>
-              <FileName>deca_device.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardware\DW1000\decadriver\deca_device.c</FilePath>
-            </File>
-            <File>
-              <FileName>deca_params_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardware\DW1000\decadriver\deca_params_init.c</FilePath>
             </File>
           </Files>
         </Group>
