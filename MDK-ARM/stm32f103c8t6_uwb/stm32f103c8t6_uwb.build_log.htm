@@ -27,9 +27,7 @@ Project File Date:  08/30/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'stm32f103c8t6_uwb'
-compiling uwb_distance_meter.c...
-../UWB_Lib/Inc/uwb_distance_meter.h(53): warning:  #1-D: last line of file ends without a newline
-  #endif
+compiling uwb_ui.c...
 ../UWB_Lib/Inc/uwb_ui.h(25): warning:  #1295-D: Deprecated declaration UWB_ActivateRX - give arg types
   UWB_status UWB_ActivateRX();
 ../UWB_Lib/Inc/uwb_ui.h(27): warning:  #1295-D: Deprecated declaration UWB_GetTxTimestamp64 - give arg types
@@ -40,13 +38,13 @@ compiling uwb_distance_meter.c...
   UWB_status UWB_checkMessage();
 ../UWB_Lib/Inc/uwb_ui.h(32): warning:  #1-D: last line of file ends without a newline
   #endif
-..\UWB_Lib\Src\uwb_distance_meter.c(261): warning:  #1-D: last line of file ends without a newline
+..\UWB_Lib\Src\uwb_ui.c(155): warning:  #1-D: last line of file ends without a newline
   }
-..\UWB_Lib\Src\uwb_distance_meter.c: 7 warnings, 0 errors
+..\UWB_Lib\Src\uwb_ui.c: 6 warnings, 0 errors
 linking...
-Program Size: Code=16100 RO-data=528 RW-data=48 ZI-data=3896  
+Program Size: Code=16140 RO-data=528 RW-data=48 ZI-data=3896  
 FromELF: creating hex file...
-"stm32f103c8t6_uwb\stm32f103c8t6_uwb.axf" - 0 Error(s), 7 Warning(s).
+"stm32f103c8t6_uwb\stm32f103c8t6_uwb.axf" - 0 Error(s), 6 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -81,13 +79,13 @@ Package Vendor: Keil
       Include file:  CMSIS\Core\Include\tz_context.h
 
    * Component: Keil.ARM Compiler::Compiler:Event Recorder:DAP:1.4.0
-      Include file:  Config\EventRecorderConf.h
-      Include file:  Include\EventRecorder.h
       Source file:   Source\EventRecorder.c
+      Include file:  Include\EventRecorder.h
+      Include file:  Config\EventRecorderConf.h
 
    * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:EVR:1.2.0
       Source file:   Source\retarget_io.c
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

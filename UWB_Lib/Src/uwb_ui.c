@@ -34,6 +34,8 @@ UWB_status UWB_Init(uint32_t rx_timeout)
     }
     dwt_configure(&config);
 		dwt_setrxtimeout(rx_timeout);
+		dwt_setrxantennadelay(16458);//16464 16458 16471 16462
+		dwt_settxantennadelay(16458);
 		spi_set_rate_high();
 		return UWB_OK;
 }
