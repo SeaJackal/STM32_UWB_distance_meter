@@ -32,5 +32,4 @@ stm32f103c8t6_uwb\uwb_ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_fl
 stm32f103c8t6_uwb\uwb_ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 stm32f103c8t6_uwb\uwb_ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 stm32f103c8t6_uwb\uwb_ui.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
-stm32f103c8t6_uwb\uwb_ui.o: C:\Users\Морской шакал\AppData\Local\Arm\Packs\Keil\ARM_Compiler\1.6.3\Include\EventRecorder.h
 stm32f103c8t6_uwb\uwb_ui.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h

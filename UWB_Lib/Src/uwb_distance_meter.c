@@ -2,8 +2,6 @@
 
 #include <stdlib.h>
 
-#include "EventRecorder.h"
-
 #include "uwb_ui.h"
 
 #define UWB_DM_COUNT_DIFFERENCE(later_time, earlier_time) \
@@ -12,7 +10,6 @@
 		(delta_1*delta_2 - corr_1*corr_2)/(delta_1 + delta_2 + corr_1 + corr_2)
 #define UWB_DM_SET_BIT(reg, bit) reg |= 1<<bit
 #define UWB_DM_RESET_BIT(reg, bit) reg &= ~(1<<bit)
-//#define UWB_DM_GET_SHIFT(base, index) (agent->agents_number-1-base+index)%agent->agents_number
 
 void write64to40bit(uint8_t* dest, uint64_t src);
 uint64_t read40to64bit(uint8_t* src);
@@ -22,8 +19,6 @@ UWB_DM_Status UWB_DM_fillMessage(UWB_DM_Agent* agent);
 
 UWB_DM_Status UWB_DM_init(UWB_DM_Agent* new_agent, uint8_t agents_number, uint8_t index)
 {
-	if(UWB_Init(60000)!=UWB_OK)
-		return UWB_DM_DW_ERROR;
 	uint8_t message_length = 2+agents_number*15;
 	uint64_t* rx_times = malloc(sizeof(uint64_t) * agents_number);
 	uint64_t* deltas = malloc(sizeof(uint64_t)*agents_number);
@@ -61,9 +56,21 @@ UWB_DM_Status UWB_DM_init(UWB_DM_Agent* new_agent, uint8_t agents_number, uint8_
 		.received_times = received_times
 	};
 	*new_agent = temp;
+	if(UWB_Init(60000)!=UWB_OK)
+		return UWB_DM_DW_ERROR;
 	if(UWB_ActivateRX()!=UWB_OK)
 		return UWB_DM_DW_ERROR;
 	return UWB_DM_OK;
+}
+void UWB_DM_clear(UWB_DM_Agent* agent)
+{
+	free(agent->rx_times);
+	free(agent->deltas);
+	free(agent->corrections);
+	free(agent->self_times);
+	for(uint8_t i = 0; i<agent->agents_number; i++)
+		free(agent->received_times[i]);
+	free(agent->received_times);
 }
 UWB_DM_Status UWB_DM_iterate(UWB_DM_Agent* agent)
 {
@@ -258,4 +265,8 @@ uint64_t read40to64bit(uint8_t* src)
 	uint64_t temp = *(uint32_t*)src;
 	((uint8_t*)&temp)[4] = src[4];
 	return temp;
+}
+UWB_DM_Status UWB_DM_calibrate(UWB_DM_Agent* agent)
+{
+	
 }

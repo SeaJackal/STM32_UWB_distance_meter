@@ -107,8 +107,8 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-	UWB_INTERFACE_init();
-	HAL_UART_Receive_IT(&huart1, UWB_INTERFACE_getInitBuffer(), UWB_INTERFACE_getInitLength());
+	//UWB_INTERFACE_init();
+	HAL_UART_Receive_IT(&huart1, UWB_INTERFACE_getReceiveBuffer(), UWB_INTERFACE_getReceiveLength());
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -119,23 +119,24 @@ int main(void)
 		{
 			boat_uart_rx_flag = 0;
 			UWB_INTERFACE_markGetMessage();
-			HAL_UART_Receive_IT(&huart1, UWB_INTERFACE_getInitBuffer(), UWB_INTERFACE_getInitLength());
+			HAL_UART_Receive_IT(&huart1, UWB_INTERFACE_getReceiveBuffer(), UWB_INTERFACE_getReceiveLength());
+			if(UWB_INTERFACE_isLastMessageIncorrect())
+				printf("Wrong CRC\n");
+			else
+				printf("Got message\n");
 		}
 		switch(UWB_INTERFACE_iterate())
 		{
-			case UWB_INTERFACE_NO_MESSAGE:
-				//printf("No message\n");
-				break;
-			case UWB_INTERFACE_INCORRECT_MESSAGE:
-				printf("Wrong crc\n");
-				break;
 			case UWB_INTERFACE_READY_TO_SEND_ERROR:
 				printf("UWB error\n");
-				HAL_UART_Transmit(&huart1, UWB_INTERFACE_getMessageBuffer(), UWB_INTERFACE_getMessageLength(), 100);
+				HAL_UART_Transmit(&huart1, UWB_INTERFACE_getTransmitBuffer(), UWB_INTERFACE_getTransmitLength(), 100);
 				break;			
 			case UWB_INTERFACE_READY_TO_SEND_OK:
 				printf("UWB ok\n");
-				HAL_UART_Transmit(&huart1, UWB_INTERFACE_getMessageBuffer(), UWB_INTERFACE_getMessageLength(), 100);
+				HAL_UART_Transmit(&huart1, UWB_INTERFACE_getTransmitBuffer(), UWB_INTERFACE_getTransmitLength(), 100);
+				uint8_t* pointer = UWB_INTERFACE_getTransmitBuffer();
+				printf("%u, %u\n%u, %u\n%u, %u\n", 
+				pointer[6]&2, *(uint32_t*)(pointer+8), pointer[6]&4, *(uint32_t*)(pointer+12), pointer[6]&8, *(uint32_t*)(pointer+16));
 				break;
 		}
     /* USER CODE END WHILE */

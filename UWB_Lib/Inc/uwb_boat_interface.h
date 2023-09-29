@@ -7,24 +7,16 @@ typedef enum
 {
 	UWB_INTERFACE_READY_TO_SEND_OK,
 	UWB_INTERFACE_READY_TO_SEND_ERROR,
-	UWB_INTERFACE_NO_MESSAGE,
-	UWB_INTERFACE_INCORRECT_MESSAGE
+	UWB_INTERFACE_READY_TO_SEND_TASK_DONE
 } UWB_INTERFACE_Status;
 
-typedef enum
-{
-	UWB_INTERFACE_WAITING_INIT,
-	UWB_INTERFACE_SENDING_DATA,
-	UWB_INTERFACE_RESET_REQUIRED
-} UWB_INTEFACE_State;
-
-void UWB_INTERFACE_init();
 void UWB_INTERFACE_markGetMessage();
 void UWB_INTERFACE_markSendMessage();
-void* UWB_INTERFACE_getMessageBuffer();
-void* UWB_INTERFACE_getInitBuffer();
-uint16_t UWB_INTERFACE_getMessageLength();
-uint16_t UWB_INTERFACE_getInitLength();
+void* UWB_INTERFACE_getTransmitBuffer();
+void* UWB_INTERFACE_getReceiveBuffer();
+uint8_t UWB_INTERFACE_isLastMessageIncorrect();
+uint16_t UWB_INTERFACE_getTransmitLength();
+uint16_t UWB_INTERFACE_getReceiveLength();
 UWB_INTERFACE_Status UWB_INTERFACE_iterate();
 
 #endif

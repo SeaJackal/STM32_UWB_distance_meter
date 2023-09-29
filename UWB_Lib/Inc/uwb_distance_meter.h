@@ -42,6 +42,9 @@ typedef struct
 } UWB_DM_Agent;
 
 UWB_DM_Status UWB_DM_init(UWB_DM_Agent* new_agent, uint8_t agents_number, uint8_t index);
+//UWB_DM_Status UWB_DM_reinit(UWB_DM_Agent* agent, uint8_t agents_number, uint8_t index);
+void UWB_DM_clear(UWB_DM_Agent* agent);
+UWB_DM_Status UWB_DM_calibrate(UWB_DM_Agent* agent);
 UWB_DM_Status UWB_DM_reset(UWB_DM_Agent* agent);
 UWB_DM_Status UWB_DM_iterate(UWB_DM_Agent* agent);
 
