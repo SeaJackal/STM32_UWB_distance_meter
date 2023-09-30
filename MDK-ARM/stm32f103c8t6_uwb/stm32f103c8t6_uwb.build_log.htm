@@ -22,7 +22,7 @@ Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
 D:\Sea Jackal\Gidro\Modem\stm32f103c8t6_uwb\MDK-ARM\stm32f103c8t6_uwb.uvprojx
-Project File Date:  08/30/2023
+Project File Date:  09/29/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
@@ -46,55 +46,65 @@ compiling uwb_boat_interface.c...
   UWB_INTERFACE_Status UWB_INTERFACE_iterate();
 ../UWB_Lib/Inc/uwb_boat_interface.h(22): warning:  #1-D: last line of file ends without a newline
   #endif
-../UWB_Lib/Inc/uwb_distance_meter.h(56): warning:  #1-D: last line of file ends without a newline
+../UWB_Lib/Inc/uwb_distance_meter.h(59): warning:  #1-D: last line of file ends without a newline
   #endif
-..\UWB_Lib\Src\uwb_boat_interface.c(93): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_initMessageBuffer - give arg types
+..\UWB_Lib\Src\uwb_boat_interface.c(95): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_initMessageBuffer - give arg types
   void UWB_INTERFACE_initMessageBuffer();
-..\UWB_Lib\Src\uwb_boat_interface.c(94): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_initSelf - give arg types
+..\UWB_Lib\Src\uwb_boat_interface.c(96): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_initSelf - give arg types
   void UWB_INTERFACE_initSelf();
-..\UWB_Lib\Src\uwb_boat_interface.c(95): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_calibrate - give arg types
+..\UWB_Lib\Src\uwb_boat_interface.c(97): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_calibrate - give arg types
   void UWB_INTERFACE_calibrate();
-..\UWB_Lib\Src\uwb_boat_interface.c(96): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_repairSelf - give arg types
+..\UWB_Lib\Src\uwb_boat_interface.c(98): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_repairSelf - give arg types
   uint8_t UWB_INTERFACE_repairSelf();
-..\UWB_Lib\Src\uwb_boat_interface.c(98): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_parseMessage - give arg types
+..\UWB_Lib\Src\uwb_boat_interface.c(100): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_parseMessage - give arg types
   void UWB_INTERFACE_parseMessage();
-..\UWB_Lib\Src\uwb_boat_interface.c(99): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_manageDM - give arg types
+..\UWB_Lib\Src\uwb_boat_interface.c(101): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_manageDM - give arg types
   void UWB_INTERFACE_manageDM();
-..\UWB_Lib\Src\uwb_boat_interface.c(100): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_iterateDM - give arg types
+..\UWB_Lib\Src\uwb_boat_interface.c(102): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_iterateDM - give arg types
   void UWB_INTERFACE_iterateDM();
-..\UWB_Lib\Src\uwb_boat_interface.c(101): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_formMessage - give arg types
+..\UWB_Lib\Src\uwb_boat_interface.c(103): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_formMessage - give arg types
   uint8_t UWB_INTERFACE_formMessage();
-..\UWB_Lib\Src\uwb_boat_interface.c(277): warning:  #1-D: last line of file ends without a newline
+..\UWB_Lib\Src\uwb_boat_interface.c(284): warning:  #1-D: last line of file ends without a newline
   }
 ..\UWB_Lib\Src\uwb_boat_interface.c: 19 warnings, 0 errors
-compiling uwb_ui.c...
-../UWB_Lib/Inc/uwb_ui.h(25): warning:  #1295-D: Deprecated declaration UWB_ActivateRX - give arg types
-  UWB_status UWB_ActivateRX();
-../UWB_Lib/Inc/uwb_ui.h(27): warning:  #1295-D: Deprecated declaration UWB_GetTxTimestamp64 - give arg types
-  uint64_t UWB_GetTxTimestamp64();
-../UWB_Lib/Inc/uwb_ui.h(28): warning:  #1295-D: Deprecated declaration UWB_GetRxTimestamp64 - give arg types
-  uint64_t UWB_GetRxTimestamp64();
-../UWB_Lib/Inc/uwb_ui.h(29): warning:  #1295-D: Deprecated declaration UWB_checkMessage - give arg types
-  UWB_status UWB_checkMessage();
-../UWB_Lib/Inc/uwb_ui.h(32): warning:  #1-D: last line of file ends without a newline
+compiling main.c...
+../UWB_Lib/Inc/uwb_boat_interface.h(13): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_markGetMessage - give arg types
+  void UWB_INTERFACE_markGetMessage();
+../UWB_Lib/Inc/uwb_boat_interface.h(14): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_markSendMessage - give arg types
+  void UWB_INTERFACE_markSendMessage();
+../UWB_Lib/Inc/uwb_boat_interface.h(15): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_getTransmitBuffer - give arg types
+  void* UWB_INTERFACE_getTransmitBuffer();
+../UWB_Lib/Inc/uwb_boat_interface.h(16): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_getReceiveBuffer - give arg types
+  void* UWB_INTERFACE_getReceiveBuffer();
+../UWB_Lib/Inc/uwb_boat_interface.h(17): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_isLastMessageIncorrect - give arg types
+  uint8_t UWB_INTERFACE_isLastMessageIncorrect();
+../UWB_Lib/Inc/uwb_boat_interface.h(18): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_getTransmitLength - give arg types
+  uint16_t UWB_INTERFACE_getTransmitLength();
+../UWB_Lib/Inc/uwb_boat_interface.h(19): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_getReceiveLength - give arg types
+  uint16_t UWB_INTERFACE_getReceiveLength();
+../UWB_Lib/Inc/uwb_boat_interface.h(20): warning:  #1295-D: Deprecated declaration UWB_INTERFACE_iterate - give arg types
+  UWB_INTERFACE_Status UWB_INTERFACE_iterate();
+../UWB_Lib/Inc/uwb_boat_interface.h(22): warning:  #1-D: last line of file ends without a newline
   #endif
-..\UWB_Lib\Src\uwb_ui.c(52): warning:  #223-D: function "EventRecord2" declared implicitly
-  			EventRecord2(2, 0, 0);
-..\UWB_Lib\Src\uwb_ui.c(72): warning:  #223-D: function "EventRecord2" declared implicitly
-  					EventRecord2(3, status_reg_ & SYS_STATUS_ALL_RX_ERR, 0);
-..\UWB_Lib\Src\uwb_ui.c(83): warning:  #223-D: function "EventRecord2" declared implicitly
-  			EventRecord2(4, 0, 0);
-..\UWB_Lib\Src\uwb_ui.c(100): warning:  #223-D: function "EventRecord2" declared implicitly
-  			EventRecord2(5, 0, 0);
-..\UWB_Lib\Src\uwb_ui.c(115): warning:  #223-D: function "EventRecord2" declared implicitly
-  			EventRecord2(6, 0, 0);
-..\UWB_Lib\Src\uwb_ui.c(150): warning:  #1-D: last line of file ends without a newline
-  }
-..\UWB_Lib\Src\uwb_ui.c: 11 warnings, 0 errors
+../Src/main.c(65): warning:  #1295-D: Deprecated declaration start_simple_transmiting - give arg types
+  extern int start_simple_transmiting();
+../Src/main.c(66): warning:  #1295-D: Deprecated declaration start_simple_receiving - give arg types
+  extern int start_simple_receiving();
+../Src/main.c(67): warning:  #1295-D: Deprecated declaration start_repeater - give arg types
+  extern void start_repeater();
+../Src/main.c(68): warning:  #1295-D: Deprecated declaration start_distance_meter - give arg types
+  extern void start_distance_meter();
+../Src/main.c(69): warning:  #1295-D: Deprecated declaration start_dm_agent - give arg types
+  extern void start_dm_agent();
+../Src/main.c(121): warning:  #546-D: transfer of control bypasses initialization of:
+            variable "pointer"  (declared at line 129)
+  		switch(UWB_INTERFACE_iterate())
+  		^
+../Src/main.c: 15 warnings, 0 errors
 linking...
-Program Size: Code=16840 RO-data=528 RW-data=132 ZI-data=3812  
+Program Size: Code=17080 RO-data=576 RW-data=140 ZI-data=3804  
 FromELF: creating hex file...
-"stm32f103c8t6_uwb\stm32f103c8t6_uwb.axf" - 0 Error(s), 30 Warning(s).
+"stm32f103c8t6_uwb\stm32f103c8t6_uwb.axf" - 0 Error(s), 34 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -129,8 +139,8 @@ Package Vendor: Keil
       Include file:  CMSIS\Core\Include\tz_context.h
 
    * Component: Keil.ARM Compiler::Compiler:Event Recorder:DAP:1.4.0
-      Include file:  Include\EventRecorder.h
       Include file:  Config\EventRecorderConf.h
+      Include file:  Include\EventRecorder.h
       Source file:   Source\EventRecorder.c
 
    * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:EVR:1.2.0

@@ -27,6 +27,9 @@ typedef struct
 	uint8_t speaker;
 	UWB_DM_State state;
 	uint8_t error_counter;
+	uint8_t calibration_flag;
+	uint8_t calibration_not_done_flag;
+	uint8_t last_calibration_iteration;
 	
 	uint8_t* message_buffer;
 	uint16_t connection_bits;
@@ -44,7 +47,7 @@ typedef struct
 UWB_DM_Status UWB_DM_init(UWB_DM_Agent* new_agent, uint8_t agents_number, uint8_t index);
 //UWB_DM_Status UWB_DM_reinit(UWB_DM_Agent* agent, uint8_t agents_number, uint8_t index);
 void UWB_DM_clear(UWB_DM_Agent* agent);
-UWB_DM_Status UWB_DM_calibrate(UWB_DM_Agent* agent);
+void UWB_DM_calibrate(UWB_DM_Agent* agent, uint16_t* delays);
 UWB_DM_Status UWB_DM_reset(UWB_DM_Agent* agent);
 UWB_DM_Status UWB_DM_iterate(UWB_DM_Agent* agent);
 

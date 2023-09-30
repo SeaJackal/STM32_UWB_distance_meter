@@ -19,7 +19,7 @@ UWB_DM_Status UWB_DM_fillMessage(UWB_DM_Agent* agent);
 
 UWB_DM_Status UWB_DM_init(UWB_DM_Agent* new_agent, uint8_t agents_number, uint8_t index)
 {
-	uint8_t message_length = 2+agents_number*15;
+	uint8_t message_length = 3+agents_number*15;
 	uint64_t* rx_times = malloc(sizeof(uint64_t) * agents_number);
 	uint64_t* deltas = malloc(sizeof(uint64_t)*agents_number);
 	uint64_t* corrections = malloc(sizeof(uint64_t)*agents_number);
@@ -46,6 +46,9 @@ UWB_DM_Status UWB_DM_init(UWB_DM_Agent* new_agent, uint8_t agents_number, uint8_
 		.speaker = index,
 		.state = UWB_DM_SEARCHING_CONNECTION,
 		.error_counter = 0,
+		.calibration_flag = 0,
+		.calibration_not_done_flag = 1,
+		.last_calibration_iteration = 0,
 		.message_buffer = message_buffer,
 		.connection_bits = 0,
 		.rx_times = rx_times,
@@ -179,16 +182,26 @@ UWB_DM_Status UWB_DM_parseMessage(UWB_DM_Agent* agent)
 		agent->iteration = agent->message_buffer[0];
 		agent->speaker = agent->message_buffer[1];
 	}
+	if(agent->message_buffer[2]!=agent->last_calibration_iteration)
+	{
+		if(agent->calibration_flag)
+			agent->calibration_not_done_flag = 1;
+		else
+		{
+			UWB_calibrate(((uint16_t*)(agent->message_buffer+3))[agent->self_index]);
+			agent->last_calibration_iteration = agent->iteration;
+		}
+	}
 	uint64_t rx_time = UWB_GetRxTimestamp64();
 	if(rx_time == UWB_ERR_TIME)
 		return UWB_DM_DW_ERROR;
 	uint8_t sender = agent->message_buffer[1];
 	agent->corrections[sender] = UWB_DM_COUNT_DIFFERENCE(agent->tx_time, agent->rx_times[sender]);
 	agent->rx_times[sender] = rx_time;
-	uint64_t delta = read40to64bit(agent->message_buffer+2+agent->self_index*5);
-	uint64_t correction = read40to64bit(agent->message_buffer+2+agent->agents_number*5+agent->self_index*5);
+	uint64_t delta = read40to64bit(agent->message_buffer+3+agent->self_index*5);
+	uint64_t correction = read40to64bit(agent->message_buffer+3+agent->agents_number*5+agent->self_index*5);
 	for(uint8_t i = 0; i<agent->agents_number; i++)
-		agent->received_times[sender][i] = read40to64bit(agent->message_buffer+2+agent->agents_number*10+i*5);
+		agent->received_times[sender][i] = read40to64bit(agent->message_buffer+3+agent->agents_number*10+i*5);
 	agent->self_times[sender] = UWB_DM_COUNT_TIME(
 		agent->deltas[sender], delta, agent->corrections[sender], correction);
 	agent->deltas[sender] = UWB_DM_COUNT_DIFFERENCE(agent->rx_times[sender], agent->tx_time);
@@ -200,11 +213,23 @@ UWB_DM_Status UWB_DM_fillMessage(UWB_DM_Agent* agent)
 {
 	agent->message_buffer[0] = agent->iteration;
 	agent->message_buffer[1] = agent->self_index;
-	for(uint8_t i = 0; i<agent->agents_number; i++)
+	if(agent->calibration_flag && agent->calibration_not_done_flag)
 	{
-		write64to40bit(agent->message_buffer+2+i*5, agent->deltas[i]);
-		write64to40bit(agent->message_buffer+2+agent->agents_number*5+i*5, agent->corrections[i]);
-		write64to40bit(agent->message_buffer+2+agent->agents_number*10+i*5, agent->self_times[i]);
+		agent->last_calibration_iteration = agent->iteration;
+		agent->calibration_not_done_flag = 0;
+		agent->message_buffer[2] = agent->iteration;
+	}
+	else
+	{
+		agent->calibration_flag = 0;
+		agent->calibration_not_done_flag = 1;
+		agent->message_buffer[2] = 0;
+		for(uint8_t i = 0; i<agent->agents_number; i++)
+		{
+			write64to40bit(agent->message_buffer+3+i*5, agent->deltas[i]);
+			write64to40bit(agent->message_buffer+3+agent->agents_number*5+i*5, agent->corrections[i]);
+			write64to40bit(agent->message_buffer+3+agent->agents_number*10+i*5, agent->self_times[i]);
+		}
 	}
 	if(UWB_SendMessage(agent->message_buffer, agent->message_length, 0)!=UWB_OK)
 		return UWB_DM_DW_ERROR;
@@ -266,7 +291,10 @@ uint64_t read40to64bit(uint8_t* src)
 	((uint8_t*)&temp)[4] = src[4];
 	return temp;
 }
-UWB_DM_Status UWB_DM_calibrate(UWB_DM_Agent* agent)
+void UWB_DM_calibrate(UWB_DM_Agent* agent, uint16_t* delays)
 {
-	
+	agent->calibration_flag = 1;
+	UWB_calibrate(delays[agent->self_index]);
+	for(uint8_t i = 0; i<agent->agents_number; i++)
+		((uint16_t*)(agent->message_buffer+3))[i] = delays[i];
 }

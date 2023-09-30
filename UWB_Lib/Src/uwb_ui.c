@@ -29,8 +29,8 @@ UWB_status UWB_Init(uint32_t rx_timeout) //
         return UWB_ERROR;
     dwt_configure(&config);
 		dwt_setrxtimeout(rx_timeout);
-		dwt_setrxantennadelay(16464);//16464 16458 16471 16462
-		dwt_settxantennadelay(16464);
+//		dwt_setrxantennadelay(16464);//16464 16458 16471 16462
+//		dwt_settxantennadelay(16464);
 		spi_set_rate_high();
 		return UWB_OK;
 }
@@ -132,4 +132,10 @@ uint32_t UWB_readMessage(uint8_t* message)
 		dwt_readrxdata(message, frame_len, 0);
 		dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG);
 		return frame_len;
+}
+
+void UWB_calibrate(uint16_t delay)
+{
+	dwt_setrxantennadelay(delay/2);//16464 16458 16471 16462
+	dwt_settxantennadelay(delay/2+delay%2);
 }

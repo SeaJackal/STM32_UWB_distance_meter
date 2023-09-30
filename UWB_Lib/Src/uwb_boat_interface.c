@@ -1,6 +1,7 @@
 #include "uwb_boat_interface.h"
 
 #include "uwb_distance_meter.h"
+#include "EventRecorder.h"
 
 #include <stdlib.h>
 
@@ -48,10 +49,10 @@
 #define UWB_INTERFACE_RESPONCE_CALIBRATION_DONE	0x04
 
 #define UWB_INTERFACE_DEFAULT_NUMBER 4
-#define UWB_INTERFACE_DEFAULT_INDEX 1
+#define UWB_INTERFACE_DEFAULT_INDEX 0
 
-uint8_t init_buffer[UWB_INTERFACE_INIT_MESS_LENGTH+2] = {0, 0, UWB_INTERFACE_DEFAULT_NUMBER, UWB_INTERFACE_DEFAULT_INDEX, 0, 0};
-
+//uint8_t init_buffer[UWB_INTERFACE_INIT_MESS_LENGTH+2] = {0, 0, UWB_INTERFACE_DEFAULT_NUMBER, UWB_INTERFACE_DEFAULT_INDEX, 0, 0};
+uint8_t init_buffer[20] = {0, 0, UWB_INTERFACE_DEFAULT_NUMBER, UWB_INTERFACE_DEFAULT_INDEX, 0, 0, 0, 0, 0, 0, 0, 0};
 typedef enum
 {
 	UWB_INTERFACE_WAITING_INIT,
@@ -85,10 +86,11 @@ struct
 	
 } uwb_boat_interface = {
 	.state = UWB_INTERFACE_WAITING_INIT,
-	.flags = 0x00,
+	.flags = 0x02,
 	.iteration = 0,
 	.receive_buffer = init_buffer,
-	.receive_length = UWB_INTERFACE_INIT_MESS_LENGTH};
+	//.receive_length = UWB_INTERFACE_INIT_MESS_LENGTH};
+	.receive_length = 12};
 
 void UWB_INTERFACE_initMessageBuffer();
 void UWB_INTERFACE_initSelf();
@@ -150,33 +152,36 @@ uint8_t UWB_INTERFACE_isLastMessageIncorrect()
 void UWB_INTERFACE_initMessageBuffer()
 {
 	if(UWB_INTERFACE_GET_INIT_BIT)
-	{
 		free(uwb_boat_interface.transmit_buffer);
-		free(uwb_boat_interface.receive_buffer);
-	}
-	else
-		UWB_INTERFACE_SET_INIT_BIT;
 	uwb_boat_interface.transmit_length = 
 		8+sizeof(uint32_t)*UWB_INTERFACE_RECEIVE_NUMBER*(UWB_INTERFACE_RECEIVE_NUMBER-1);
-	//uwb_boat_interface.receive_length =
-	//	2+sizeof(uint16_t)*UWB_INTERFACE_RECEIVE_NUMBER;
-	uwb_boat_interface.receive_length = UWB_INTERFACE_INIT_MESS_LENGTH;
+	uwb_boat_interface.receive_length =
+		2+sizeof(uint16_t)*UWB_INTERFACE_RECEIVE_NUMBER;
+	uwb_boat_interface.receive_length = 10;
 	uwb_boat_interface.transmit_buffer = malloc(sizeof(uint8_t)*(uwb_boat_interface.transmit_length+2));
 	UWB_INTERFACE_TRANSMIT_AGENTS_NUMBER = UWB_INTERFACE_RECEIVE_NUMBER;
 	UWB_INTERFACE_TRANSMIT_SELF_INDEX = UWB_INTERFACE_RECEIVE_INDEX;
 	UWB_INTERFACE_TRANSMIT_MESS_LENGTH = uwb_boat_interface.transmit_length+2;
-	UWB_INTERFACE_TRANSMIT_RESPONCE_CODE = UWB_INTERFACE_RESPONCE_OK;
+	if(UWB_INTERFACE_GET_ERROR_BIT)
+		UWB_INTERFACE_TRANSMIT_RESPONCE_CODE = UWB_INTERFACE_RESPONCE_ERROR_DW;
+	else
+		UWB_INTERFACE_TRANSMIT_RESPONCE_CODE = UWB_INTERFACE_RESPONCE_INIT_DONE;
+	if(UWB_INTERFACE_GET_INIT_BIT)
+		free(uwb_boat_interface.receive_buffer);
+	else
+		UWB_INTERFACE_SET_INIT_BIT;
 	uwb_boat_interface.receive_buffer = malloc(sizeof(uint8_t)*(uwb_boat_interface.receive_length+2));
+	//uwb_boat_interface.receive_buffer = init_buffer;
 }
 void UWB_INTERFACE_initSelf()
 {
 	if(UWB_INTERFACE_GET_INIT_BIT)
 		UWB_DM_clear(&uwb_boat_interface.agent);
+	EventRecord2(1, UWB_INTERFACE_RECEIVE_NUMBER, UWB_INTERFACE_RECEIVE_INDEX);
 	if(UWB_DM_init(&uwb_boat_interface.agent,
 		UWB_INTERFACE_RECEIVE_NUMBER, UWB_INTERFACE_RECEIVE_INDEX)==UWB_DM_DW_ERROR)
 	{
 		uwb_boat_interface.state = UWB_INTERFACE_RESET_REQUIRED;
-		UWB_INTERFACE_TRANSMIT_RESPONCE_CODE = UWB_INTERFACE_RESPONCE_ERROR_DW;
 		UWB_INTERFACE_SET_ERROR_BIT;
 	}
 	else
@@ -272,6 +277,8 @@ void UWB_INTERFACE_iterateDM()
 
 void UWB_INTERFACE_calibrate()
 {
+	UWB_DM_calibrate(&uwb_boat_interface.agent, UWB_INTERFACE_RECEIVE_CALIBRATE_DATA_PTR);
 	UWB_INTERFACE_TRANSMIT_RESPONCE_CODE = UWB_INTERFACE_RESPONCE_CALIBRATION_DONE;
+	uwb_boat_interface.state = UWB_INTERFACE_RESET_REQUIRED;
 	UWB_INTERFACE_SET_TASK_DONE_BIT;
 }

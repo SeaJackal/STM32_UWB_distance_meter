@@ -28,5 +28,6 @@ uint64_t UWB_GetTxTimestamp64();
 uint64_t UWB_GetRxTimestamp64();
 UWB_status UWB_checkMessage();
 uint32_t UWB_readMessage(uint8_t* message);
+void UWB_calibrate(uint16_t delay);
 
 #endif
